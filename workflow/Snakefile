@@ -35,9 +35,9 @@ rule sort_docker:
 
 rule hello_lxbatch:
     input:
-        "lxbatch/hello.sub"
+        "workflow/lxbatch/hello.sub"
     shell:
         """
-        cd lxbatch
+        cd workflow/lxbatch
         condor_submit hello.sub
         """
