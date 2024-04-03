@@ -1,0 +1,6 @@
+executable            = hello_world.sh
+arguments             = $(ClusterId) $(ProcId)
+output                = output/hello.$(ClusterId).$(ProcId).out
+error                 = error/hello.$(ClusterId).$(ProcId).err
+log                   = log/hello.$(ClusterId).log
+queue

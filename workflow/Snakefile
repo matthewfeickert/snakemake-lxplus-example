@@ -32,3 +32,12 @@ rule sort_docker:
         "docker://python:3.12"
     script:
         "scripts/sort.sh"
+
+rule hello_lxbatch:
+    input:
+        "lxbatch/hello.sub"
+    shell:
+        """
+        cd lxbatch
+        condor_submit hello.sub
+        """
