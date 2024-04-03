@@ -12,6 +12,10 @@ rm -rf results \
 && snakemake --verbose --cores 1 --printshellcmds --snakefile workflow/Snakefile sort_script
 """
 
+lxbatch-example = """
+snakemake --verbose --cores 1 --printshellcmds --snakefile workflow/Snakefile hello_lxbatch
+"""
+
 [dependencies]
 python = "3.11.*"
 snakemake = "8.10.0.*"

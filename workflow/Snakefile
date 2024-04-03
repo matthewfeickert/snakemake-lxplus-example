@@ -32,3 +32,15 @@ rule sort_docker:
         "docker://python:3.12"
     script:
         "scripts/sort.sh"
+
+rule hello_lxbatch:
+    input:
+        "workflow/lxbatch/hello.sub"
+    shell:
+        """
+        cd workflow/lxbatch
+        mkdir -p output error log
+        condor_submit hello.sub
+        sleep 2
+        condor_q
+        """

@@ -13,6 +13,12 @@ This is for LXPLUS 9 but it should be location independent.
 curl -fsSL https://pixi.sh/install.sh | bash
 ```
 
+and also [enable the shell autocompletion](https://pixi.sh/latest/#autocompletion)
+
+```
+echo 'eval "$(pixi completion --shell bash)"' >> ~/.bashrc
+```
+
 and then restart shell or
 
 ```
@@ -26,3 +32,10 @@ pixi run example
 ```
 
 If you haven't installed the environment yet, `pixi` will run the equivalent of `pixi install` before executing your `pixi run` command.
+
+
+### Trivial lxbatch example
+
+```
+pixi run lxbatch-example
+```
