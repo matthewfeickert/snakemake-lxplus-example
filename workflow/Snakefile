@@ -1,0 +1,34 @@
+rule sort_local:
+    input:
+        "data/numbers.txt",
+    params:
+        output_dir="results"
+    output:
+        "results/sorted_numbers.txt"
+    shell:
+        """
+        mkdir -p {params.output_dir} && \
+        sort {input} > {output}
+        """
+
+rule sort_script:
+    input:
+        "data/numbers.txt",
+    params:
+        output_dir="results"
+    output:
+        "results/sorted_numbers_script.txt"
+    script:
+        "scripts/sort.sh"
+
+rule sort_docker:
+    input:
+        "data/numbers.txt",
+    params:
+        output_dir="results"
+    output:
+        "results/sorted_numbers_container.txt"
+    container:
+        "docker://python:3.12"
+    script:
+        "scripts/sort.sh"

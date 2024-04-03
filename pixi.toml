@@ -1,0 +1,17 @@
+[project]
+name = "snakemake-lxplus-example"
+version = "0.1.0"
+description = "Snakemake hello world example on LXPLUS and lxbatch"
+authors = ["Matthew Feickert <matthew.feickert@cern.ch>"]
+channels = ["conda-forge", "bioconda"]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
+
+[tasks]
+example = """
+rm -rf results \
+&& snakemake --verbose --cores 1 --printshellcmds --snakefile workflow/Snakefile sort_script
+"""
+
+[dependencies]
+python = "3.11.*"
+snakemake = "8.10.0.*"
