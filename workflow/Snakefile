@@ -40,4 +40,6 @@ rule hello_lxbatch:
         """
         cd workflow/lxbatch
         condor_submit hello.sub
+        sleep 2
+        condor_q
         """
