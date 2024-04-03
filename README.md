@@ -26,3 +26,10 @@ pixi run example
 ```
 
 If you haven't installed the environment yet, `pixi` will run the equivalent of `pixi install` before executing your `pixi run` command.
+
+
+### Trivial lxbatch example
+
+```
+pixi run lxbatch-example
+```
