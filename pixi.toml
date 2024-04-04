@@ -13,7 +13,7 @@ rm -rf results \
 """
 
 lxbatch-example = """
-snakemake --snakefile workflow/Snakefile --verbose --cores 1 --printshellcmds snakemake hello_lxbatch --profile .profiles/lxbatch
+snakemake --profile .profiles/lxbatch --snakefile workflow/Snakefile --verbose --cores 1 --printshellcmds hello_lxbatch
 """
 
 apptainer-example = """
