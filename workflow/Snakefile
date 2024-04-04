@@ -34,7 +34,5 @@ rule sort_docker:
         "scripts/sort.sh"
 
 rule hello_lxbatch:
-    shell:
-        """
-        echo "hello hello"
-        """
+    script:
+        "lxbatch/hello_world.sh"
