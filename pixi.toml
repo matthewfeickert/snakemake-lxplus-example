@@ -19,3 +19,4 @@ snakemake --verbose --cores 1 --printshellcmds --snakefile workflow/Snakefile he
 [dependencies]
 python = "3.11.*"
 snakemake = "8.10.0.*"
+python-htcondor = "23.5.3.*"
