@@ -34,7 +34,7 @@ snakemake-executor-plugin-htcondor = { version = "==0.1.2" }
 lxbatch-init = """
 mkdir -p .profiles \
 && rm -rf .profiles/lxbatch \
-&& cookiecutter --output-dir .profiles/ --no-input gh:Snakemake-Profiles/htcondor profile_name=lxbatch htcondor_log_dir="${HOME}/.condor_jobs" \
+&& cookiecutter --output-dir .profiles/ --no-input gh:Snakemake-Profiles/htcondor profile_name=lxbatch htcondor_log_dir=$HOME/.condor_jobs \
 && cp config.v8+.yaml .profiles/lxbatch/
 """
 
