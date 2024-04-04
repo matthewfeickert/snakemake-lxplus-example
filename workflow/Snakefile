@@ -34,13 +34,9 @@ rule sort_docker:
         "scripts/sort.sh"
 
 rule hello_lxbatch:
-    input:
-        "workflow/lxbatch/hello.sub"
+    output:
+        "workflow/lxbatch/local_hello.txt"
     shell:
         """
-        cd workflow/lxbatch
-        mkdir -p output error log
-        condor_submit hello.sub
-        sleep 2
-        condor_q
+        echo 'hello hello' > {output}
         """
