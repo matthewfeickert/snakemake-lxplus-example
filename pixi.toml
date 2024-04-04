@@ -24,6 +24,21 @@ snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --sn
 python = "3.11.*"
 snakemake = "==8.10.4"
 htcondor = "==23.5.3"
+python-htcondor = "==23.5.3"
 
 [pypi-dependencies]
 snakemake-executor-plugin-htcondor = { version = "==0.1.2" }
+
+[feature.cookie.tasks]
+lxbatch-init = """
+mkdir -p $HOME/.config/snakemake \
+&& cookiecutter --no-input gh:Snakemake-Profiles/htcondor profile_name=lxbatch htcondor_log_dir="${HOME}/.condor_jobs" \
+&& rm -rf $HOME/.config/snakemake/lxbatch \
+&& mv lxbatch $HOME/.config/snakemake/
+"""
+
+[feature.cookie.dependencies]
+cookiecutter = "*"
+
+[environments]
+cookie = ["cookie"]
