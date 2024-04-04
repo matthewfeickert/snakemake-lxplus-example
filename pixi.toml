@@ -16,6 +16,10 @@ lxbatch-example = """
 snakemake --verbose --cores 1 --printshellcmds --executor htcondor --jobs 1 --snakefile workflow/Snakefile hello_lxbatch
 """
 
+apptainer-example = """
+snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --snakefile workflow/Snakefile sort_docker
+"""
+
 [dependencies]
 python = "3.11.*"
 snakemake = "==8.10.4"
