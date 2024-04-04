@@ -34,5 +34,9 @@ rule sort_docker:
         "scripts/sort.sh"
 
 rule hello_lxbatch:
-    script:
-        "lxbatch/hello_world.sh"
+    output:
+        "local_hello.txt"
+    shell:
+        """
+        echo "hello hello $(date)" > {output}
+        """
