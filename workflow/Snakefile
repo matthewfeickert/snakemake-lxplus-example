@@ -35,8 +35,8 @@ rule sort_docker:
 
 rule hello_lxbatch:
     output:
-        "workflow/lxbatch/local_hello.txt"
+        "local_hello.txt"
     shell:
         """
-        echo 'hello hello' > {output}
+        echo "hello hello" > {output}
         """
