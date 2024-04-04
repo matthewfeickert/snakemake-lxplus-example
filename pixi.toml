@@ -13,7 +13,7 @@ rm -rf results \
 """
 
 lxbatch-example = """
-snakemake --verbose --cores 1 --printshellcmds snakemake --profile lxbatch --jobs 1 --snakefile workflow/Snakefile hello_lxbatch
+snakemake --verbose --cores 1 --printshellcmds snakemake --profile .profiles/lxbatch --snakefile workflow/Snakefile hello_lxbatch
 """
 
 apptainer-example = """
@@ -31,10 +31,9 @@ snakemake-executor-plugin-htcondor = { version = "==0.1.2" }
 
 [feature.cookie.tasks]
 lxbatch-init = """
-mkdir -p $HOME/.config/snakemake \
-&& cookiecutter --no-input gh:Snakemake-Profiles/htcondor profile_name=lxbatch htcondor_log_dir="${HOME}/.condor_jobs" \
-&& rm -rf $HOME/.config/snakemake/lxbatch \
-&& mv lxbatch $HOME/.config/snakemake/
+mkdir -p .profiles \
+&& rm -rf .profiles/lxbatch \
+&& cookiecutter --output-dir .profiles/ --no-input gh:Snakemake-Profiles/htcondor profile_name=lxbatch htcondor_log_dir="${HOME}/.condor_jobs"
 """
 
 [feature.cookie.dependencies]
