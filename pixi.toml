@@ -29,7 +29,13 @@ python-htcondor = "==23.5.3"
 lxbatch-init = """
 mkdir -p .profiles \
 && rm -rf .profiles/lxbatch \
-&& cookiecutter --output-dir .profiles/ --no-input gh:Snakemake-Profiles/htcondor profile_name=lxbatch htcondor_log_dir=$HOME/.condor_jobs \
+&& cookiecutter \
+--no-input \
+--checkout fd097135bf3336248ed259e142ee22a7a974c729 \
+--output-dir .profiles/ \
+gh:Snakemake-Profiles/htcondor \
+profile_name=lxbatch \
+htcondor_log_dir=$PWD/.condor_jobs \
 && cp config.v8+.yaml .profiles/lxbatch/
 """
 
