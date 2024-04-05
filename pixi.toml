@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Snakemake hello world example on LXPLUS and lxbatch"
 authors = ["Matthew Feickert <matthew.feickert@cern.ch>"]
 channels = ["conda-forge", "bioconda"]
-platforms = ["linux-64", "osx-64", "osx-arm64"]
+platforms = ["linux-64"]
 
 [tasks]
 example = """
