@@ -36,11 +36,13 @@ mkdir -p .profiles \
 gh:Snakemake-Profiles/htcondor \
 profile_name=lxbatch \
 htcondor_log_dir=$PWD/.condor_jobs \
-&& cp config.v8+.yaml .profiles/lxbatch/
+&& cp patches/config.v8+.yaml .profiles/lxbatch/ \
+&& sed --in-place '/schedd = /e cat patches/grid-submit-patch.py' .profiles/lxbatch/grid-submit.py
 """
 
 [feature.cookie.dependencies]
 cookiecutter = "*"
+sed = ">=4.8"
 
 [environments]
 cookie = ["cookie"]
