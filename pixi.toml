@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Snakemake hello world example on LXPLUS and lxbatch"
 authors = ["Matthew Feickert <matthew.feickert@cern.ch>"]
 channels = ["conda-forge", "bioconda"]
-platforms = ["linux-64", "osx-64", "osx-arm64"]
+platforms = ["linux-64"]
 
 [tasks]
 example = """
@@ -13,9 +13,36 @@ rm -rf results \
 """
 
 lxbatch-example = """
-snakemake --verbose --cores 1 --printshellcmds --snakefile workflow/Snakefile hello_lxbatch
+snakemake --profile .profiles/lxbatch --snakefile workflow/Snakefile --verbose --cores 1 --printshellcmds hello_lxbatch
+"""
+
+apptainer-example = """
+snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --snakefile workflow/Snakefile sort_docker
 """
 
 [dependencies]
 python = "3.11.*"
-snakemake = "8.10.0.*"
+snakemake = "==7.32.4"
+python-htcondor = "==23.5.3"
+
+[feature.cookie.tasks]
+lxbatch-init = """
+mkdir -p .profiles \
+&& rm -rf .profiles/lxbatch \
+&& cookiecutter \
+--no-input \
+--checkout fd097135bf3336248ed259e142ee22a7a974c729 \
+--output-dir .profiles/ \
+gh:Snakemake-Profiles/htcondor \
+profile_name=lxbatch \
+htcondor_log_dir=$PWD/.condor_jobs \
+&& cp patches/config.v8+.yaml .profiles/lxbatch/ \
+&& sed --in-place '/schedd = /e cat patches/grid-submit-patch.py' .profiles/lxbatch/grid-submit.py
+"""
+
+[feature.cookie.dependencies]
+cookiecutter = "*"
+sed = ">=4.8"
+
+[environments]
+cookie = ["cookie"]

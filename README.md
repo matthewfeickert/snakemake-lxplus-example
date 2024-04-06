@@ -4,6 +4,7 @@ Snakemake hello world example on LXPLUS and lxbatch
 ## Setup
 
 This is for LXPLUS 9 but it should be location independent.
+However, as the LXPLUS home areas have limited storage, it is recommended that you run this example under your work (e.g. `/afs/cern.ch/work/f/feickert`) directory.
 
 ### Install `pixi`
 
@@ -35,6 +36,14 @@ If you haven't installed the environment yet, `pixi` will run the equivalent of 
 
 
 ### Trivial lxbatch example
+
+First run
+
+```
+pixi run lxbatch-init
+```
+
+to setup the [Snakemake HTCondor profile](https://github.com/Snakemake-Profiles/htcondor) and then run the example with
 
 ```
 pixi run lxbatch-example
