@@ -37,6 +37,14 @@ If you haven't installed the environment yet, `pixi` will run the equivalent of 
 
 ### Trivial lxbatch example
 
+First run
+
+```
+pixi run lxbatch-init
+```
+
+to setup the [Snakemake HTCondor profile](https://github.com/Snakemake-Profiles/htcondor) and then run the example with
+
 ```
 pixi run lxbatch-example
 ```
