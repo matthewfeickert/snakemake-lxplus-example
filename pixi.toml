@@ -22,7 +22,7 @@ snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --sn
 
 [dependencies]
 python = "3.11.*"
-snakemake = "==7.32.4"
+snakemake = "==8.10.6"
 python-htcondor = "==23.5.3"
 
 [feature.cookie.tasks]
