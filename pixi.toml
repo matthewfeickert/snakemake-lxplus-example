@@ -36,7 +36,7 @@ mkdir -p .profiles \
 gh:Snakemake-Profiles/htcondor \
 profile_name=lxbatch \
 htcondor_log_dir=$PWD/.condor_jobs \
-location_cern=true\
+location_cern=true \
 && cp patches/config.v8+.yaml .profiles/lxbatch/
 """
 
