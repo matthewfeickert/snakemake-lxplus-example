@@ -1,0 +1,32 @@
+# Example of problem: Would like to be able to make the output directory a parameter
+
+rule hello_world:
+    params:
+        output_dir="results",
+        name="standard model"
+    output:
+        "results/hello_world.txt"
+    shell:
+        """
+        mkdir -p {params.output_dir}
+        echo "Hello my Name is {params.name}" | tee {output}
+        """
+
+# Problem: Snakemake only supports apptainer at the moment
+# https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#running-jobs-in-containers
+# c.f. https://apptainer.org/docs/admin/main/installation.html
+# c.f. https://stackoverflow.com/questions/78381413/how-to-set-apptainer-shell-when-using-software-deployment-method-apptainer-wit
+
+rule hello_world_container:
+    params:
+        output_dir="results",
+        name="standard model"
+    output:
+        "results/hello_world.txt"
+    container:
+        "docker://busybox:1.33"
+    shell:
+        """
+        mkdir -p {params.output_dir}
+        echo "Hello my Name is {params.name}" | tee {output}
+        """
