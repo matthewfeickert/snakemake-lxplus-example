@@ -20,6 +20,16 @@ apptainer-example = """
 snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --snakefile workflow/Snakefile sort_docker
 """
 
+recast-hello-world = """
+rm -rf results \
+&& snakemake --verbose --cores 1 --printshellcmds --snakefile hello_world/Snakefile hello_world
+"""
+
+recast-hello-world-container = """
+rm -rf results \
+&& snakemake --verbose --cores 1 --printshellcmds --software-deployment-method apptainer --snakefile hello_world/Snakefile hello_world_container
+"""
+
 [dependencies]
 python = ">=3.12.9,<3.13"
 snakemake = ">=8.30.0,<9"
