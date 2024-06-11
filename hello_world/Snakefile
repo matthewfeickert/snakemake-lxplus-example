@@ -25,6 +25,8 @@ rule hello_world_container:
         "results/hello_world.txt"
     container:
         "docker://busybox:1.33"
+    resources:
+        shell_exec="sh"
     shell:
         """
         mkdir -p {params.output_dir}
