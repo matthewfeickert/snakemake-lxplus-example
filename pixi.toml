@@ -22,7 +22,7 @@ snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --sn
 
 [dependencies]
 python = "3.11.*"
-snakemake = "==8.10.6"
+snakemake = "==8.14.0"
 python-htcondor = "==23.5.3"
 snakemake-executor-plugin-cluster-generic = "==1.0.9"
 
