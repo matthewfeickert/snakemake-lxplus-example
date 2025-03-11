@@ -21,10 +21,10 @@ snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --sn
 """
 
 [dependencies]
-python = "3.11.*"
-snakemake = "==8.14.0"
-python-htcondor = "==23.5.3"
-snakemake-executor-plugin-cluster-generic = "==1.0.9"
+python = "3.12.*"
+snakemake = "8.29.3.*"
+python-htcondor = "24.5.1.*"
+snakemake-executor-plugin-cluster-generic = "1.0.9.*"
 
 [feature.cookie.tasks]
 lxbatch-init = """
