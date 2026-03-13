@@ -20,6 +20,11 @@ apptainer-example = """
 snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --snakefile workflow/Snakefile sort_docker
 """
 
+[tasks.chtc-example]
+cmd = """
+snakemake --printshellcmds --executor htcondor --shared-fs-usage none --snakefile workflow/Snakefile sort_chtc
+"""
+
 [dependencies]
 snakemake = ">=9.16.3,<10"
 python-htcondor = ">=24.5.1,<25"
