@@ -40,3 +40,14 @@ rule hello_lxbatch:
         """
         echo "hello hello $(date)" > {output}
         """
+
+rule process:
+    input:
+        "data/numbers.txt",
+    output:
+        "results/sorted_numbers.txt"
+    resources:
+        htcondor_transfer_input_files="placeholder.txt",
+        htcondor_transfer_output_files="logs/out.log"
+    script:
+        "scripts/sort.sh"
