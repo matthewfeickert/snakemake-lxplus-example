@@ -41,7 +41,7 @@ rule hello_lxbatch:
         echo "hello hello $(date)" > {output}
         """
 
-rule process:
+rule sort_chtc:
     input:
         "data/numbers.txt",
     output:
