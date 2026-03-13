@@ -1,4 +1,4 @@
-[project]
+[workspace]
 name = "snakemake-lxplus-example"
 version = "0.1.0"
 description = "Snakemake hello world example on LXPLUS and lxbatch"
@@ -21,28 +21,22 @@ snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --sn
 """
 
 [dependencies]
-python = ">=3.12.9,<3.13"
-snakemake = ">=8.30.0,<9"
+snakemake = ">=9.16.3,<10"
 python-htcondor = ">=24.5.1,<25"
-snakemake-executor-plugin-cluster-generic = ">=1.0.9,<2"
 
-[feature.cookie.tasks]
-lxbatch-init = """
-mkdir -p .profiles \
-&& rm -rf .profiles/lxbatch \
-&& cookiecutter \
---no-input \
---output-dir .profiles/ \
-gh:Snakemake-Profiles/htcondor \
-profile_name=lxbatch \
-htcondor_log_dir=$PWD/.condor_jobs \
-location_cern=true \
-&& cp patches/config.v8+.yaml .profiles/lxbatch/
-"""
+# [feature.cookie.tasks]
+# lxbatch-init = """
+# mkdir -p .profiles \
+# && rm -rf .profiles/lxbatch \
+# && cookiecutter \
+# --no-input \
+# --output-dir .profiles/ \
+# gh:Snakemake-Profiles/htcondor \
+# profile_name=lxbatch \
+# htcondor_log_dir=$PWD/.condor_jobs \
+# location_cern=true \
+# && cp patches/config.v8+.yaml .profiles/lxbatch/
+# """
 
-[feature.cookie.dependencies]
-cookiecutter = "*"
-sed = ">=4.8"
-
-[environments]
-cookie = ["cookie"]
+[pypi-dependencies]
+snakemake-executor-plugin-htcondor = { git = "https://github.com/htcondor/snakemake-executor-plugin-htcondor-archive.git", branch = "main" }
