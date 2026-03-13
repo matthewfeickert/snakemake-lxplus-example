@@ -22,7 +22,7 @@ snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --sn
 
 [tasks.chtc-example]
 cmd = """
-snakemake --printshellcmds --executor htcondor --shared-fs-usage none --snakefile workflow/Snakefile sort_chtc
+snakemake --jobs 1 --printshellcmds --executor htcondor --shared-fs-usage none --snakefile workflow/Snakefile sort_chtc
 """
 
 [dependencies]
