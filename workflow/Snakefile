@@ -1,3 +1,103 @@
+from pathlib import Path
+import os
+import time
+
+
+def eos_target(name):
+    eos_dir = config.get("eos_dir") or os.environ.get("EOS_DIR")
+    if not eos_dir:
+        raise ValueError(
+            "EOS target requested, but no EOS directory was configured. "
+            "Set --config eos_dir=/eos/... or the EOS_DIR environment variable."
+        )
+    return str(Path(eos_dir) / name)
+
+
+EOS_DIR = config.get("eos_dir") or os.environ.get("EOS_DIR")
+EOS_HELLO_TARGET = str(Path(EOS_DIR) / "hello_from_htcondor.txt") if EOS_DIR else None
+WORKFLOW_ROOT = Path(workflow.basedir).resolve().parent
+LOCAL_EOS_READ_TARGET = str(WORKFLOW_ROOT / "results" / "read_from_eos.txt")
+BATCH_SAMPLE_MANIFEST = WORKFLOW_ROOT / "data" / "batch_samples.tsv"
+
+
+def load_batch_samples(manifest_path):
+    samples = []
+    with open(manifest_path) as handle:
+        next(handle)
+        for line in handle:
+            sample, sleep_s = line.strip().split("\t")
+            samples.append(
+                {
+                    "sample": sample,
+                    "sleep_s": int(sleep_s),
+                    "path": str(WORKFLOW_ROOT / "data" / "batch_samples" / f"{sample}.txt"),
+                }
+            )
+    return samples
+
+
+def chunked(items, size):
+    return [items[i : i + size] for i in range(0, len(items), size)]
+
+
+def balanced_batches(items, target_cost):
+    """Pack samples into batches with similar expected runtime."""
+    batches = []
+    for item in sorted(items, key=lambda sample: (-sample["sleep_s"], sample["sample"])):
+        candidate = None
+        candidate_cost = None
+        for idx, batch in enumerate(batches):
+            batch_cost = sum(entry["sleep_s"] for entry in batch)
+            if batch_cost + item["sleep_s"] <= target_cost:
+                if candidate is None or batch_cost < candidate_cost:
+                    candidate = idx
+                    candidate_cost = batch_cost
+        if candidate is None:
+            batches.append([item])
+        else:
+            batches[candidate].append(item)
+    return batches
+
+
+BATCH_SAMPLES = load_batch_samples(BATCH_SAMPLE_MANIFEST)
+FIXED_BATCH_SIZE = 3
+TARGET_BATCH_COST = 8
+FIXED_BATCHES = chunked(BATCH_SAMPLES, FIXED_BATCH_SIZE)
+BALANCED_BATCHES = balanced_batches(BATCH_SAMPLES, TARGET_BATCH_COST)
+FIXED_BATCH_IDS = [str(i) for i in range(len(FIXED_BATCHES))]
+BALANCED_BATCH_IDS = [str(i) for i in range(len(BALANCED_BATCHES))]
+FIXED_BATCH_LOOKUP = {str(i): batch for i, batch in enumerate(FIXED_BATCHES)}
+BALANCED_BATCH_LOOKUP = {str(i): batch for i, batch in enumerate(BALANCED_BATCHES)}
+
+
+def batch_inputs(batch_lookup, batch_id):
+    return [sample["path"] for sample in batch_lookup[batch_id]]
+
+
+def write_batch_report(output_path, batch_label, batch_samples):
+    total_sleep = sum(sample["sleep_s"] for sample in batch_samples)
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w") as handle:
+        handle.write(f"{batch_label}\n")
+        handle.write(f"simulated_total_sleep_s\t{total_sleep}\n")
+        handle.write("sample\tsleep_s\tinput\n")
+        for sample in batch_samples:
+            handle.write(
+                f"{sample['sample']}\t{sample['sleep_s']}\t{sample['path']}\n"
+            )
+            time.sleep(sample["sleep_s"])
+
+
+def write_summary(output_path, title, batch_outputs):
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w") as out_handle:
+        out_handle.write(f"{title}\n")
+        for batch_output in batch_outputs:
+            out_handle.write(f"\n== {Path(batch_output).name} ==\n")
+            with open(batch_output) as in_handle:
+                out_handle.write(in_handle.read())
+
+
 rule sort_local:
     input:
         "data/numbers.txt",
@@ -29,9 +129,67 @@ rule sort_docker:
     output:
         "results/sorted_numbers_container.txt"
     container:
-        "docker://python:3.12"
+        "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/library/python:3.11"
     script:
         "scripts/sort.sh"
+
+
+rule batching_fixed_demo:
+    input:
+        "results/batching/fixed/summary.txt"
+
+
+rule process_fixed_batch:
+    input:
+        lambda wc: batch_inputs(FIXED_BATCH_LOOKUP, wc.batch)
+    output:
+        "results/batching/fixed/batch_{batch}.txt"
+    resources:
+        htcondor_request_mem_mb=1024,
+        htcondor_request_disk_mb=1024,
+        classad_JobFlavour="espresso"
+    run:
+        write_batch_report(output[0], f"fixed_batch\t{wildcards.batch}", FIXED_BATCH_LOOKUP[wildcards.batch])
+
+
+rule summarize_fixed_batches:
+    input:
+        expand("results/batching/fixed/batch_{batch}.txt", batch=FIXED_BATCH_IDS)
+    output:
+        "results/batching/fixed/summary.txt"
+    run:
+        write_summary(output[0], "fixed_size_batching", input)
+
+
+rule batching_balanced_demo:
+    input:
+        "results/batching/balanced/summary.txt"
+
+
+rule process_balanced_batch:
+    input:
+        lambda wc: batch_inputs(BALANCED_BATCH_LOOKUP, wc.batch)
+    output:
+        "results/batching/balanced/batch_{batch}.txt"
+    resources:
+        htcondor_request_mem_mb=1024,
+        htcondor_request_disk_mb=1024,
+        classad_JobFlavour="espresso"
+    run:
+        write_batch_report(
+            output[0],
+            f"balanced_batch\t{wildcards.batch}",
+            BALANCED_BATCH_LOOKUP[wildcards.batch],
+        )
+
+
+rule summarize_balanced_batches:
+    input:
+        expand("results/batching/balanced/batch_{batch}.txt", batch=BALANCED_BATCH_IDS)
+    output:
+        "results/batching/balanced/summary.txt"
+    run:
+        write_summary(output[0], "cost_aware_batching", input)
 
 rule hello_lxbatch:
     output:
@@ -40,3 +198,25 @@ rule hello_lxbatch:
         """
         echo "hello hello $(date)" > {output}
         """
+
+
+if EOS_HELLO_TARGET:
+    rule hello_eos:
+        output:
+            EOS_HELLO_TARGET
+        shell:
+            """
+            mkdir -p "$(dirname {output})"
+            echo "hello from htcondor $(date)" > {output}
+            """
+
+    rule read_eos:
+        input:
+            EOS_HELLO_TARGET
+        output:
+            LOCAL_EOS_READ_TARGET
+        shell:
+            """
+            mkdir -p "$(dirname {output})"
+            cat {input} > {output}
+            """

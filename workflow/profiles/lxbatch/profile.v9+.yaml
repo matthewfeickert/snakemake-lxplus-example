@@ -1,0 +1,12 @@
+executor: htcondor
+jobs: 5000
+max-jobs-per-second: 100
+max-status-checks-per-second: 100
+restart-times: 5
+local-cores: 10
+htcondor-jobdir: .condor_jobs
+default-resources:
+  - getenv=True
+  - htcondor_request_mem_mb=1024
+  - htcondor_request_disk_mb=1024
+  - classad_JobFlavour=espresso

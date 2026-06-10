@@ -1,48 +1,44 @@
-[project]
+[workspace]
 name = "snakemake-lxplus-example"
-version = "0.1.0"
 description = "Snakemake hello world example on LXPLUS and lxbatch"
-authors = ["Matthew Feickert <matthew.feickert@cern.ch>"]
 channels = ["conda-forge", "bioconda"]
 platforms = ["linux-64"]
 
 [tasks]
 example = """
 rm -rf results \
-&& snakemake --verbose --cores 1 --printshellcmds --snakefile workflow/Snakefile sort_script
+&& CONDOR_CONFIG=/dev/null _CONDOR_NETWORK_INTERFACE=127.0.0.1 XDG_CACHE_HOME=$PWD/.cache snakemake --verbose --cores 1 --printshellcmds --snakefile workflow/Snakefile sort_script
 """
 
 lxbatch-example = """
-snakemake --profile .profiles/lxbatch --snakefile workflow/Snakefile --verbose --cores 1 --printshellcmds hello_lxbatch
+XDG_CACHE_HOME=$PWD/.cache snakemake --workflow-profile lxbatch --snakefile workflow/Snakefile --verbose --cores 1 --printshellcmds hello_lxbatch
+"""
+
+lxbatch-eos-example = """
+python -c "import os,sys; eos=os.environ.get('EOS_DIR'); sys.exit(0 if eos else 'Set EOS_DIR to an EOS output directory, e.g. /eos/user/c/clange/snakemake-lxplus-example')" \
+&& XDG_CACHE_HOME=$PWD/.cache snakemake --workflow-profile lxbatch --config eos_dir="$EOS_DIR" --snakefile workflow/Snakefile --verbose --cores 1 --printshellcmds hello_eos
+"""
+
+lxbatch-eos-read-example = """
+python -c "import os,sys; eos=os.environ.get('EOS_DIR'); sys.exit(0 if eos else 'Set EOS_DIR to an EOS directory containing hello_from_htcondor.txt, e.g. /eos/user/c/clange/snakemake-lxplus-example')" \
+&& XDG_CACHE_HOME=$PWD/.cache snakemake --workflow-profile lxbatch --config eos_dir="$EOS_DIR" --snakefile workflow/Snakefile --verbose --cores 1 --printshellcmds read_eos
 """
 
 apptainer-example = """
-snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --snakefile workflow/Snakefile sort_docker
+CONDOR_CONFIG=/dev/null _CONDOR_NETWORK_INTERFACE=127.0.0.1 XDG_CACHE_HOME=$PWD/.cache snakemake --cores 1 --printshellcmds --software-deployment-method apptainer --snakefile workflow/Snakefile sort_docker
+"""
+
+batch-fixed-example = """
+rm -rf results/batching/fixed \
+&& CONDOR_CONFIG=/dev/null _CONDOR_NETWORK_INTERFACE=127.0.0.1 XDG_CACHE_HOME=$PWD/.cache snakemake --verbose --cores 1 --printshellcmds --snakefile workflow/Snakefile batching_fixed_demo
+"""
+
+batch-balanced-example = """
+rm -rf results/batching/balanced \
+&& CONDOR_CONFIG=/dev/null _CONDOR_NETWORK_INTERFACE=127.0.0.1 XDG_CACHE_HOME=$PWD/.cache snakemake --verbose --cores 1 --printshellcmds --snakefile workflow/Snakefile batching_balanced_demo
 """
 
 [dependencies]
-python = ">=3.12.9,<3.13"
-snakemake = ">=8.30.0,<9"
-python-htcondor = ">=24.5.1,<25"
-snakemake-executor-plugin-cluster-generic = ">=1.0.9,<2"
-
-[feature.cookie.tasks]
-lxbatch-init = """
-mkdir -p .profiles \
-&& rm -rf .profiles/lxbatch \
-&& cookiecutter \
---no-input \
---output-dir .profiles/ \
-gh:Snakemake-Profiles/htcondor \
-profile_name=lxbatch \
-htcondor_log_dir=$PWD/.condor_jobs \
-location_cern=true \
-&& cp patches/config.v8+.yaml .profiles/lxbatch/
-"""
-
-[feature.cookie.dependencies]
-cookiecutter = "*"
-sed = ">=4.8"
-
-[environments]
-cookie = ["cookie"]
+snakemake = ">=9.22.0,<10"
+python-htcondor = ">=24.12.20,<25"
+snakemake-executor-plugin-htcondor = ">=0.2.1,<0.3"
